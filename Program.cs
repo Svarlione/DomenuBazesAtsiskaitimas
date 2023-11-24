@@ -63,360 +63,505 @@ namespace DomenuBazesAtsiskaitimas
             return int.Parse(randomString.ToString());
         }
 
-        public void GreatFaculty()//kuriam nauja Fakultieta, 2-ju vienodu fakultietu negalima sukurti
+        public void GreatFacultyWithValidations()//kuriam nauja Fakultieta, 2-ju vienodu fakultietu negalima sukurti
         {
+            bool continueWorking = true;
             using var dbContext = new UnuversityContext();
-
-            Console.WriteLine("Irasykite naujo Fakultieto pavadinima, Aciu");
-            string facultyName = Console.ReadLine();
-
-            var newFaculty = new Faculty
+            do
             {
-                Name = facultyName,
-                UnicCode = RandomString(),
-            };
-            if (!IsFacultyExists(facultyName))
-            {
+                Console.WriteLine("Irasykite naujo Fakultieto pavadinima, Aciu");
+                string facultyName = Console.ReadLine();
 
-                dbContext.Faculties.Add(newFaculty);
-                dbContext.SaveChanges();
-
-                Console.WriteLine($"Naujas fakultietas sukurtas: {newFaculty.Name}, Unikalus kodas: {newFaculty.UnicCode}");
-            }
-            else
-            {
-                Console.WriteLine("Klaida: Fakultietas su tokiu pavadinimu jau egzistuoja.");
-            }
-
-        }
-
-        public void GreatLecture()//kuriam nauja Lekcija, negalima sukurti tokios pat lekcijos
-        {
-            using var dbContext = new UnuversityContext();
-
-            Console.WriteLine("Irasykite Paskaitos pavadinima, Aciu");
-            string lectureName = Console.ReadLine();
-            if (IsLettersOnly(lectureName))
-            {
-                var newLecture = new Lecture
+                var newFaculty = new Faculty
                 {
-                    Name = lectureName,
-                    UnicCode = RandomInt(),
+                    Name = facultyName,
+                    UnicCode = RandomString(),
                 };
-
-                if (!IsLectureExists(lectureName))
+                if (!IsFacultyExists(facultyName))
                 {
 
-                    dbContext.Lectures.Add(newLecture);
+                    dbContext.Faculties.Add(newFaculty);
                     dbContext.SaveChanges();
 
-                    Console.WriteLine($"Nauja paskaita sukurta: {newLecture.Name}, Unikalus kodas: {newLecture.UnicCode}");
+                    Console.WriteLine($"Naujas fakultietas sukurtas: {newFaculty.Name}, Unikalus kodas: {newFaculty.UnicCode}");
                 }
                 else
                 {
-                    Console.WriteLine("Klaida: Paskaita su tokiu pavadinimu jau egzistuoja.");
+                    Console.WriteLine("Klaida: Fakultietas su tokiu pavadinimu jau egzistuoja.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
                 }
             }
-            else
-            {
-                Console.WriteLine("Klaida: Paskaita gali tureti tik raides.");
-            }
+            while (continueWorking);
+
         }
 
-        public void GreatStudent()// kuriam nauja Studenta su valifdacija kad V.P gali buti tik raides,ir studentas negali pasikartoti
+        public void GreatLectureWithValidations()//kuriam nauja Lekcija, negalima sukurti tokios pat lekcijos
         {
+            bool continueWorking = true;
             using var dbContext = new UnuversityContext();
 
-            Console.WriteLine("Irasykite naujo Studento Varda,Pavarde. Aciu");
-            string studentName = Console.ReadLine();
-
-            if (IsLettersOnly(studentName))
+            do
             {
-                var newStudent = new Student
+                Console.WriteLine("Irasykite Paskaitos pavadinima, Aciu");
+                string lectureName = Console.ReadLine();
+                if (IsLettersOnly(lectureName))
                 {
-                    FullName = studentName,
-                    UnicCode = RandomInt(),
-                };
-
-                if (!IsStudentExists(studentName))
-                {
-                    dbContext.Students.Add(newStudent);
-                    dbContext.SaveChanges();
-
-                    Console.WriteLine($"Naujas studentas sukurtas: {newStudent.FullName}, Unikalus kodas: {newStudent.UnicCode}");
-                }
-                else
-                {
-                    Console.WriteLine("Klaida: Studentas su tokiu vardu ir pavardė jau egzistuoja.");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Klaida: Vardas ir Pavarde gali tureti tik raides.");
-            }
-        }
-
-        public void AddStudentToFaculty()//pridedam studenta prie fakultieto su patikrinimais, ir priskiariam jam to fakultieto paskaitas(su salyga kad jis nera tame fakultiete)
-        {
-            using var dbContext = new UnuversityContext();
-
-            // Isvedam fakultietu list
-            Console.WriteLine("Pasirinkit Fakultieta:");
-            var faculties = dbContext.Faculties.ToList();
-            foreach (var faculty in faculties)
-            {
-                Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
-            }
-
-            // Nuskaitom ivesti
-            Console.Write("Iveskite Fakultieto ID: ");
-            if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
-            {
-                // Gaunam fakultieta
-                var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
-
-                if (selectedFaculty != null)
-                {
-                    // isvedam studentu list
-                    Console.WriteLine("Iveskite studento ID:");
-                    if (int.TryParse(Console.ReadLine(), out var studentId))
+                    var newLecture = new Lecture
                     {
-                        // tikrinam ar yra studentas
-                        var existingStudent = dbContext.Students.Include(s => s.Lectures).FirstOrDefault(s => s.StudentId == studentId);
+                        Name = lectureName,
+                        UnicCode = RandomInt(),
+                    };
 
-                        if (existingStudent != null)
+                    if (!IsLectureExists(lectureName))
+                    {
+
+                        dbContext.Lectures.Add(newLecture);
+                        dbContext.SaveChanges();
+
+                        Console.WriteLine($"Nauja paskaita sukurta: {newLecture.Name}, Unikalus kodas: {newLecture.UnicCode}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Klaida: Paskaita su tokiu pavadinimu jau egzistuoja.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Klaida: Paskaita gali tureti tik raides.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
+                }
+            }
+            while (continueWorking);
+
+        }
+
+        public void GreatStudentWithValidations()// kuriam nauja Studenta su valifdacija kad V.P gali buti tik raides,ir studentas negali pasikartoti
+        {
+            bool continueWorking = true;
+            using var dbContext = new UnuversityContext();
+            do
+            {
+                Console.WriteLine("Irasykite naujo Studento Varda,Pavarde. Aciu");
+                string studentName = Console.ReadLine();
+
+                if (IsLettersOnly(studentName))
+                {
+                    var newStudent = new Student
+                    {
+                        FullName = studentName,
+                        UnicCode = RandomInt(),
+                    };
+
+                    if (!IsStudentExists(studentName))
+                    {
+                        dbContext.Students.Add(newStudent);
+                        dbContext.SaveChanges();
+
+                        Console.WriteLine($"Naujas studentas sukurtas: {newStudent.FullName}, Unikalus kodas: {newStudent.UnicCode}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Klaida: Studentas su tokiu vardu ir pavardė jau egzistuoja.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Klaida: Vardas ir Pavarde gali tureti tik raides.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
+                }
+            }
+            while (continueWorking);
+        }
+
+        public void AddStudentToFacultyWithValidations()//pridedam studenta prie fakultieto su patikrinimais, ir priskiariam jam to fakultieto paskaitas(su salyga kad jis nera tame fakultiete)
+        {
+            bool continueWorking = true;
+            using var dbContext = new UnuversityContext();
+            do
+            {
+                // Isvedam fakultietu list
+                Console.WriteLine("Pasirinkit Fakultieta:");
+                var faculties = dbContext.Faculties.ToList();
+                foreach (var faculty in faculties)
+                {
+                    Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
+                }
+
+                // Nuskaitom ivesti
+                Console.Write("Iveskite Fakultieto ID: ");
+                if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
+                {
+                    // Gaunam fakultieta
+                    var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
+
+                    if (selectedFaculty != null)
+                    {
+                        // isvedam studentu list
+                        Console.WriteLine("Iveskite studento ID:");
+                        if (int.TryParse(Console.ReadLine(), out var studentId))
                         {
-                            // tikrinam ar studento nera sarase fakultieto
-                            if (!selectedFaculty.Students.Any(s => s.StudentId == existingStudent.StudentId))
+                            // tikrinam ar yra studentas
+                            var existingStudent = dbContext.Students.Include(s => s.Lectures).FirstOrDefault(s => s.StudentId == studentId);
+
+                            if (existingStudent != null)
                             {
-                                // gaunam visas fakultieto paskaitas
-                                var facultyLectures = selectedFaculty.Lectures.ToList();
+                                // tikrinam ar studento nera sarase fakultieto
+                                if (!selectedFaculty.Students.Any(s => s.StudentId == existingStudent.StudentId))
+                                {
+                                    // gaunam visas fakultieto paskaitas
+                                    var facultyLectures = selectedFaculty.Lectures.ToList();
 
-                                // pridiedam paskaitas prie studento
-                                existingStudent.Lectures.AddRange(facultyLectures);
+                                    // pridiedam paskaitas prie studento
+                                    existingStudent.Lectures.AddRange(facultyLectures);
 
 
-                                selectedFaculty.Students.Add(existingStudent);
+                                    selectedFaculty.Students.Add(existingStudent);
 
 
-                                dbContext.SaveChanges();
-                                Console.WriteLine($"Studentas {existingStudent.FullName} sekmingai priskirtas prie Fakultieto {selectedFaculty.Name}.");
+                                    dbContext.SaveChanges();
+                                    Console.WriteLine($"Studentas {existingStudent.FullName} sekmingai priskirtas prie Fakultieto {selectedFaculty.Name}.");
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Studentas {existingStudent.FullName} jau yra priskitras prie Fakultieto {selectedFaculty.Name}.");
+                                }
                             }
                             else
                             {
-                                Console.WriteLine($"Studentas {existingStudent.FullName} jau yra priskitras prie Fakultieto {selectedFaculty.Name}.");
+                                Console.WriteLine($"Studentas su tokiu ID {studentId} neegzestoja domenu bazeje.");
                             }
                         }
                         else
                         {
-                            Console.WriteLine($"Studentas su tokiu ID {studentId} neegzestoja domenu bazeje.");
+                            Console.WriteLine("Nekorektiska ivestis studento ID.");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Nekorektiska ivestis studento ID.");
+                        Console.WriteLine("Tokio Fakultieto nera.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Tokio Fakultieto nera.");
+                    Console.WriteLine("Nekoreksta ivestis Fakultiete.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
                 }
             }
-            else
-            {
-                Console.WriteLine("Nekoreksta ivestis Fakultiete.");
-            }
+            while (continueWorking);
         }
 
-        public void AddLecturesToFaculty()//pridedam studenta prie fakultieto su patikrinimais
+        public void AddLecturesToFacultyWithValidations()//pridedam studenta prie fakultieto su patikrinimais
         {
+            bool continueWorking = true;
             using var dbContext = new UnuversityContext();
 
-
-            Console.WriteLine("Pasirinkit fakultieta:");
-            var faculties = dbContext.Faculties.ToList();
-            foreach (var faculty in faculties)
+            do
             {
-
-                Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
-            }
-
-
-            Console.Write("Iveskite fakultieto numeri: ");
-            if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
-            {
-
-                var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
-
-                if (selectedFaculty != null)
+                Console.WriteLine("Pasirinkit fakultieta:");
+                var faculties = dbContext.Faculties.ToList();
+                foreach (var faculty in faculties)
                 {
 
-                    Console.WriteLine("Pasirinkit Lekcija is saraso:");
-                    var lectures = dbContext.Lectures.ToList();
-                    foreach (var lecture in lectures)
+                    Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
+                }
+
+
+                Console.Write("Iveskite fakultieto numeri: ");
+                if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
+                {
+
+                    var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
+
+                    if (selectedFaculty != null)
                     {
-                        Console.WriteLine($"{lecture.LectureId}. {lecture.Name}");
-                    }
+
+                        Console.WriteLine("Pasirinkit Lekcija is saraso:");
+                        var lectures = dbContext.Lectures.ToList();
+                        foreach (var lecture in lectures)
+                        {
+                            Console.WriteLine($"{lecture.LectureId}. {lecture.Name}");
+                        }
 
 
-                    Console.Write("Iveskite lekcijos numeri: ");
-                    if (int.TryParse(Console.ReadLine(), out var selectedLectureId))
-                    {
-
-                        var selectedLecture = lectures.FirstOrDefault(l => l.LectureId == selectedLectureId);
-
-                        if (selectedLecture != null)
+                        Console.Write("Iveskite lekcijos numeri: ");
+                        if (int.TryParse(Console.ReadLine(), out var selectedLectureId))
                         {
 
-                            selectedFaculty.Lectures.Add(selectedLecture);
+                            var selectedLecture = lectures.FirstOrDefault(l => l.LectureId == selectedLectureId);
+
+                            if (selectedLecture != null)
+                            {
+
+                                selectedFaculty.Lectures.Add(selectedLecture);
 
 
-                            dbContext.SaveChanges();
+                                dbContext.SaveChanges();
 
-                            Console.WriteLine($"Lekcija {selectedLecture.Name} sekmingai pridieta prie fakultieto {selectedFaculty.Name}.");
+                                Console.WriteLine($"Lekcija {selectedLecture.Name} sekmingai pridieta prie fakultieto {selectedFaculty.Name}.");
+                            }
+                            else
+                            {
+
+                                Console.WriteLine("Tokios Lekcijos nera.");
+                            }
                         }
                         else
                         {
-                            Console.WriteLine("Tokios Lekcijos nera.");
+                            Console.WriteLine("Nekorektiska ivestis.");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Nekorektiska ivestis.");
+                        Console.WriteLine("Tokio Fakultieto nera.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Tokio Fakultieto nera.");
+                    Console.WriteLine("Nekorektiska ivestis.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
                 }
             }
-            else
-            {
-                Console.WriteLine("Nekorektiska ivestis.");
-            }
+            while (continueWorking);
+
         }
 
         public void PrintStudentsOfFaculty()
         {
+            bool continueWorking = true;
             using var dbContext = new UnuversityContext();
 
-
-            Console.WriteLine("Praso pasirinkit fakultieta:");
-            var faculties = dbContext.Faculties.ToList();
-            foreach (var faculty in faculties)
+            do
             {
-                Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
-            }
+                Console.WriteLine("Praso pasirinkit fakultieta:");
+                var faculties = dbContext.Faculties.Include(f => f.Students).ToList();
+                foreach (var faculty in faculties)
+                {
+                    Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
+                }
 
 
-            Console.Write("Irasykite Fakultieto ID: ");
-            if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
-            {
-
-                var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
-
-                if (selectedFaculty != null)
+                Console.Write("Irasykite Fakultieto ID: ");
+                if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
                 {
 
-                    Console.WriteLine($"Fakultieto studentai {selectedFaculty.Name}:");
-                    foreach (var student in selectedFaculty.Students)
+                    var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
+
+                    if (selectedFaculty != null)
                     {
-                        Console.WriteLine($"{student.StudentId}. {student.FullName}");
+
+                        Console.WriteLine($"Fakultieto studentai {selectedFaculty.Name}:");
+                        foreach (var student in selectedFaculty.Students)
+                        {
+                            Console.WriteLine($"{student.StudentId}. {student.FullName}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tokio Fakultieto nera.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Tokio Fakultieto nera.");
+                    Console.WriteLine("Nekorektiska ivestis fakultiete.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
                 }
             }
-            else
-            {
-                Console.WriteLine("Nekorektiska ivestis fakultiete.");
-            }
+            while (continueWorking);
+
         }
 
         public void PrintLecturesOfFaculty()
         {
+            bool continueWorking = true;
             using var dbContext = new UnuversityContext();
 
-
-            Console.WriteLine("Pasirinkit fakultieta:");
-            var faculties = dbContext.Faculties.ToList();
-            foreach (var faculty in faculties)
+            do
             {
-                Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
-            }
+                Console.WriteLine("Pasirinkit fakultieta:");
+                var faculties = dbContext.Faculties.IncludeToList();
+                foreach (var faculty in faculties)
+                {
+                    Console.WriteLine($"{faculty.FacultyId}. {faculty.Name}");
+                }
 
 
-            Console.Write("Iveskite Fakultieto ID: ");
-            if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
-            {
-
-                var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
-
-                if (selectedFaculty != null)
+                Console.Write("Iveskite Fakultieto ID: ");
+                if (int.TryParse(Console.ReadLine(), out var selectedFacultyId))
                 {
 
-                    Console.WriteLine($"Fakultieto paskaitos {selectedFaculty.Name}:");
-                    foreach (var lecture in selectedFaculty.Lectures)
+                    var selectedFaculty = faculties.FirstOrDefault(f => f.FacultyId == selectedFacultyId);
+
+                    if (selectedFaculty != null)
                     {
-                        Console.WriteLine($"{lecture.LectureId}. {lecture.Name}");
+
+                        Console.WriteLine($"Fakultieto paskaitos {selectedFaculty.Name}:");
+                        foreach (var lecture in selectedFaculty.Lectures)
+                        {
+                            Console.WriteLine($"{lecture.LectureId}. {lecture.Name}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tokio Fakultieto nera.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Tokio Fakultieto nera.");
+                    Console.WriteLine("Nekorektiska ivestis fakultiete.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
                 }
             }
-            else
-            {
-                Console.WriteLine("Nekorektiska ivestis fakultiete.");
-            }
+            while (continueWorking);
+
         }
 
         public void PrintLecturesOfStudent()
         {
+            bool continueWorking = true;
             using var dbContext = new UnuversityContext();
 
-
-            Console.WriteLine("Pasirinkit studenta:");
-            var students = dbContext.Students.ToList();
-            foreach (var student in students)
+            do
             {
-                Console.WriteLine($"{student.StudentId}. {student.FullName}");
-            }
+                Console.WriteLine("Pasirinkit studenta:");
+                var students = dbContext.Students.ToList();
+                foreach (var student in students)
+                {
+                    Console.WriteLine($"{student.StudentId}. {student.FullName}");
+                }
 
 
-            Console.Write("Iveskite studento ID: ");
-            if (int.TryParse(Console.ReadLine(), out var selectedStudentId))
-            {
-
-                var selectedStudent = students.FirstOrDefault(s => s.StudentId == selectedStudentId);
-
-                if (selectedStudent != null)
+                Console.Write("Iveskite studento ID: ");
+                if (int.TryParse(Console.ReadLine(), out var selectedStudentId))
                 {
 
-                    Console.WriteLine($"Studento  {selectedStudent.FullName} paskaitos:");
-                    foreach (var lecture in selectedStudent.Lectures)
+                    var selectedStudent = students.FirstOrDefault(s => s.StudentId == selectedStudentId);
+
+                    if (selectedStudent != null)
                     {
-                        Console.WriteLine($"{lecture.LectureId}. {lecture.Name}");
+
+                        Console.WriteLine($"Studento  {selectedStudent.FullName} paskaitos:");
+                        foreach (var lecture in selectedStudent.Lectures)
+                        {
+                            Console.WriteLine($"{lecture.LectureId}. {lecture.Name}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Tokio studento nera.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Tokio studento nera.");
+                    Console.WriteLine("Nekorektiska ivestis studento ID.");
+                }
+                Console.WriteLine("Įveskite 'q' jei norite baigti");
+                var continueInput = Console.ReadLine();
+                if (continueInput.ToLower() == "q")
+                {
+                    continueWorking = false;
                 }
             }
-            else
-            {
-                Console.WriteLine("Nekorektiska ivestis studento ID.");
-            }
+            while (continueWorking);
+
         }
 
 
         static void Main(string[] args)
         {
-            Console.WriteLine("hello");
+
+            using var dbContext = new UnuversityContext();
+            var programInstance = new Program();
+            bool continueWorking = true;
+
+            do
+            {
+                Console.WriteLine("Jus sveikina Universiteto vidine informacine sistema.\n Prasom pasirinkti jums reikiama veiksma.\n Aciu.  ");
+                Thread.Sleep(3000);
+                Console.Clear();
+                Console.WriteLine("1. Fakultieto sukurimas");
+                Console.WriteLine("2. Paskaitos sukurimas");
+                Console.WriteLine("3. Naujas Studentas");
+                Console.WriteLine("4. Studento priskirimas prie Fakultieto");
+                Console.WriteLine("5. Pridieti Paskaita(-as) prie Fakultieto");
+                Console.WriteLine("6. Atspausdinti Fakultieto Studentus");
+                Console.WriteLine("7. Atspausdinti Fakultieto paskaitos");
+                Console.WriteLine("8. Atspausdinti Studento paskaitas");
+                Console.WriteLine("9. Iseiti");
+
+
+                int choice = int.Parse(Console.ReadLine());
+
+                switch (choice)
+                {
+                    case 1:
+                        programInstance.GreatFacultyWithValidations();
+                        break;
+                    case 2:
+                        programInstance.GreatLectureWithValidations();
+                        break;
+                    case 3:
+                        programInstance.GreatStudentWithValidations();
+                        break;
+                    case 4:
+                        programInstance.AddStudentToFacultyWithValidations();
+                        break;
+                    case 5:
+                        programInstance.AddLecturesToFacultyWithValidations();
+                        break;
+                    case 6:
+                        programInstance.PrintStudentsOfFaculty();
+                        break;
+                    case 7:
+                        programInstance.PrintLecturesOfFaculty();
+                        break;
+                    case 8:
+                        programInstance.PrintLecturesOfStudent();
+                        break;
+                    case 9:
+                        Environment.Exit(0);
+                        break;
+
+                    default:
+                        Console.WriteLine("Error :P.");
+                        break;
+                }
+            }
+            while (continueWorking);
         }
     }
 }
